@@ -138,7 +138,87 @@ def get_best_node(root):
 
 
 def start_game(state,mode,player,level):
-   pass
+    winner = 0
+    while(1):
+        print("\nCurrent State:")
+        print_state(state)
+        #player
+        if player == 0:
+            print("Enter a number from 1 to 6")
+            ip = input("Pocket number: ")
+            pocket = int(ip)+6
+            if pocket >= 7 and pocket <= 12:         
+                new_state,play_again = state_update(state,pocket,mode)
+                if new_state == []:
+                    print("!!!!!!!!!!!!!!!!! Empty Pocket Try Again !!!!!!!!!!!!!!!!!!!!")
+                else:
+                    state = new_state
+                    # print_state(state)
+                    if play_again == 1:
+                        player = 0
+                    else:
+                        player = 1
+            else:
+                print("!!!!!!!!!!!!!!!!! Invalid Move Try Again !!!!!!!!!!!!!!!!!!!!")
+        else:
+            print("Computer is thinking .........")
+            root = Node(state=state,alpha=-10000,beta=10000,type=True)
+            build_tree(root,level,mode)
+            apply_minimax_alpha_beta(root)
+            node = get_best_node(root)
+            state = node.state
+            # print_state(state)
+            if node.type:
+                player = 1
+            else:
+                player = 0
+
+
+        if state[1:7] == [0,0,0,0,0,0]:
+            rest_stones = sum(state[7:13])
+            state[7:13] = [0,0,0,0,0,0]
+            state[13] += rest_stones
+            winner = 1
+
+        elif state[7:13] == [0,0,0,0,0,0]:
+            rest_stones = sum(state[1:7])
+            state[1:7] = [0,0,0,0,0,0]
+            state[0] += rest_stones
+            winner = 1
+            
+        if winner:
+            print_state(state)
+            if state[0] > state[13]:
+                print("******************** You Lose ************************")
+            elif state[0] < state[13]:
+                print("******************** You win  ************************")
+            else:
+                print("******************** Draw   ************************")
+
+            print("Press 1 to play again")
+            print("Press 0 to exit")
+            return int(input("-> "))
+            
 
 if __name__ == "__main__":
-    pass
+    while True:
+        current_state = [0,4,4,4,4,4,4,   4,4,4,4, 4 ,4,0]
+                    # 0,1,2,3,4,5,6,  7,8,9,10,11,12,13
+
+        print("------------------- Welcome to Mancala --------------------")
+        print("Press 1 For Easy mode")
+        print("Press 2 For Medium mode")
+        print("Press 3 For Hard mode")
+        level = int(input("Difficulty: "))*3
+        print("Press 0 for normal mode")
+        print("Press 1 for stealing mode")
+        mode = int(input("Mode: "))
+        print("Press 0 to play first")
+        print("Press 1 to play second")
+        player = int(input("Player: "))
+
+        print("------------------- The game is on ------------------------")
+        again = start_game(current_state,mode,player,level)
+        if again == 0:
+            break
+
