@@ -78,7 +78,23 @@ def print_state(state):
 
 
 def apply_minimax_alpha_beta(root):
-    pass
+    for node in root.children:
+        if(node.value == None):
+            node.alpha = root.alpha
+            node.beta = root.beta
+            apply_minimax_alpha_beta(node)
+            node.value = node.alpha if (node.type) else node.beta
+        value = node.value
+        if root.type:
+            if value > root.alpha:
+                root.alpha = value
+        else:
+            if value < root.beta:
+                root.beta = value 
+
+        if root.alpha >= root.beta:
+                break
+    
 
             
 def build_tree(root,num_levels,mode):
@@ -111,7 +127,14 @@ def find_next_possible_states(node,count_value,mode):
  
 
 def get_best_node(root):
-    pass
+    max_value = -10000
+    max_node = None
+    for node in root.children:
+        if node.value != None and node.value > max_value:
+            max_value = node.value
+            max_node = node
+    return max_node
+    
 
 
 def start_game(state,mode,player,level):
