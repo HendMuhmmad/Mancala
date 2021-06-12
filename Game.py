@@ -1,5 +1,22 @@
 class Node:
     def __init__(self,state=None,value=None,beta=None,alpha=None,type=None):
+        """
+        Parameters: state: List
+                    Board state associated with the node.
+
+                    value: int
+                    The value associated with the nod’s state according to the utility function.
+
+                    alpha: int
+                    alpha value of node according to the minimax algorithm.
+
+                    beta: int
+                    beta value according the minimax algorithm.
+
+                    type: boolean
+                    node type in the tree True for a maximizer, False for minimizer. 
+
+        """
         self.state = state
         self.value = value
         self.beta = beta
@@ -11,10 +28,35 @@ class Node:
         self.parent = None
 
     def addNode(self, node):
+        """
+        Append the given node to the calling node children.
+        Parameters: node: object 
+                    The child node
+
+        """
         node.parent = self
         self.children.append(node)
 
 def state_update(state,cell_number,mode):
+    """
+    Gives the resulting state after moving stones in a given pocket.
+    Parameters: state: List 
+                The current board state.
+
+                cell_number: int
+                The number of pocket must be from 1 to 12 only.
+
+                mode: int 
+                Determine mode 1 for stealing and 0 for non-stealing.
+
+    Return      new_state,double_turn: tuple of list and int
+
+                The list contains the next state or empty if the pocket is empty.
+                double_turn is  1 if the user is to be play again
+                               -1 if the computer is to play again
+                                0 otherwise
+
+    """
     new_state = state.copy()
     player =  1 if cell_number < 7 else 2
     mancala = 0 if player == 1 else 13
@@ -71,6 +113,10 @@ def state_update(state,cell_number,mode):
 
 
 def print_state(state):
+    """
+    Prints the board‘s state.
+    Parameters:  state: List
+    """
     print("__________________________________________")
     print(f"{str(state[0])}  | {str(state[1:7])}   | {str(state[13])}")
     print(f"   | {str(state[7:13])} | ")
@@ -78,6 +124,13 @@ def print_state(state):
 
 
 def apply_minimax_alpha_beta(root):
+    """
+    Traverse the game tree while applying minimax algorithm with alpha beta pruning to calculate node values.
+    Parameters: root: node object
+                The root of the tree to apply the algorithm on.
+
+    """
+
     for node in root.children:
         if(node.value == None):
             node.alpha = root.alpha
@@ -98,6 +151,18 @@ def apply_minimax_alpha_beta(root):
 
             
 def build_tree(root,num_levels,mode):
+    """
+    Build the game tree starting from the node root input by generating all possible state nodes played at each turn.
+    Parameters: root: object
+                The input node containing the current state of the game.
+
+                num_levels: int
+                Tree required depth.
+
+                mode: int 
+                Determine mode 1 for stealing and 0 for non-stealing.
+
+    """
     count_value = False
     if num_levels == 0:
         return
@@ -108,6 +173,18 @@ def build_tree(root,num_levels,mode):
         build_tree(node,num_levels-1,mode) 
         
 def find_next_possible_states(node,count_value,mode):
+    """
+    Add children nodes to the given node with the next possible states from the input node state.
+    Parameters: node: node object
+                The input node containing the state to add children to it.
+
+                count_value: boolean
+                True count the value of the added node states and false otherwise.
+                
+                mode: int 
+                Determine mode 1 for stealing and 0 for non-stealing.
+
+    """
     i = 0 if node.type==True else 6
     for x  in range(1,7) :        
         value = None        
@@ -127,6 +204,15 @@ def find_next_possible_states(node,count_value,mode):
  
 
 def get_best_node(root):
+    """
+    Get the node with maximum value from the root of the input tree direct children
+    Parameters: root: node object
+                The root of the tree.
+
+    Return:     max_node: node object
+                The node that has the max value.
+
+    """
     max_value = -10000
     max_node = None
     for node in root.children:
@@ -138,6 +224,25 @@ def get_best_node(root):
 
 
 def start_game(state,mode,player,level):
+    """
+    Starts the game loop until one of the players win.
+    Parameters: state: List 
+                The initial board state.
+                player: int
+                player code 0 for player.
+                                        1 for computer
+                mode: int 
+                Determine mode 1 for stealing and 0 for non-stealing.
+                level: int
+                determines the difficulty 1 for easy
+                                          2 for medium
+                                          3 for hard
+
+	return: play_again: int
+            1 if the user wants to play again
+            0 to exit
+
+    """
     winner = 0
     while(1):
         print("\nCurrent State:")
